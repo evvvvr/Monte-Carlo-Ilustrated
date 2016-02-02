@@ -1,36 +1,10 @@
-var SquareSideSize = 1;
+var CanvasSize      = 450;
+var CanvasElementId = 'myCanvas'
 
-var CircleRadius = SquareSideSize;
-
-function estimatePi(squareSize) {
-    var numOfPoints         = 0;
-    var numOfPointsInCircle = 0;
-    var stepGenerator       = step(squareSize, generateRandomPoints(squareSize));
-
-    while (true) {
-        for (var point of take(stepGenerator, 100)) {
-            ++numOfPoints;
-
-            if (point.isInCircle) {
-                ++numOfPointsInCircle;
-            }
-        }
-
-        var estimatedPiValue = (numOfPointsInCircle / numOfPoints) * 4;
-
-        console.log('Estimated PI value is: %d\n', estimatedPiValue);
-    }
-}
-
-function* step(squareSize, points) {
-    for (var point of points) {
-        yield {
-            x: point.x,
-            y: point.y,
-            isInCircle: isPointInCircle(point, squareSize)
-        };
-    }
-}
+var Palette = {
+    Roots: 'rgb(148,137,121)',
+    Elm: 'rgb(168,168,120)'
+};
 
 function* take(gen, count) {
     for (var i = 0; i < count; i++) {
@@ -38,7 +12,7 @@ function* take(gen, count) {
     }
 }
 
-function* generateRandomPoints(squareSize) {
+function* generateRandomPoints() {
     while (true) {
         yield {
             x: Math.random(),
@@ -48,8 +22,69 @@ function* generateRandomPoints(squareSize) {
 }
 
 function isPointInCircle(p, radius) {
-    return Math.sqrt(p.x * p.x + p.y * p.y) < radius;
+    return Math.sqrt(p.x * p.x + p.y * p.y) < 1;
 }
 
-console.log('Estimating PI value using circle inscribed into with square size %d ', SquareSideSize);
-estimatePi(SquareSideSize);
+function* step(points) {
+    for (var point of points) {
+        yield {
+            x: point.x,
+            y: point.y,
+            isInCircle: isPointInCircle(point)
+        };
+    }
+}
+
+function* estimatePi() {
+    var totalPoints    = 0;
+    var pointsInCircle = 0;
+    var stepGenerator  = step(generateRandomPoints());
+
+    for (var point of stepGenerator) {
+        ++totalPoints;
+
+        if (point.isInCircle) {
+            ++pointsInCircle;
+        }
+
+        yield {
+            x: point.x,
+            y: point.y,
+            isInCircle: point.isInCircle,
+            totalPoints,
+            pointsInCircle,
+            estimatedPi: (pointsInCircle / totalPoints) * 4
+        };
+    }
+}
+
+var piGenerator = estimatePi();
+
+function draw() {
+    requestAnimationFrame(draw);
+
+    var canvas = document.getElementById(CanvasElementId);
+    var cntx   = canvas.getContext('2d');
+
+    for (var item of take(piGenerator, 100)) {
+        var x = item.x * CanvasSize;
+        var y = item.y * CanvasSize;
+
+        cntx.fillStyle = item.isInCircle ? Palette.Elm : Palette.Roots;
+        cntx.fillRect(x, y, 1, 1);
+    }
+}
+
+function init() {
+    var canvas = document.getElementById(CanvasElementId);
+    var cntx   = canvas.getContext('2d');
+
+    cntx.strokeStyle = Palette.Roots; 
+    cntx.beginPath();
+    cntx.arc(0, 0, CanvasSize, 0, 2 * Math.PI);
+    cntx.stroke();
+
+    requestAnimationFrame(draw);
+}
+
+document.addEventListener('DOMContentLoaded', init);
