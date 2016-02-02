@@ -1,4 +1,4 @@
-const CanvasSize = 450;
+const CanvasSize = 400;
 
 const Palette = {
     Roots: 'rgb(148,137,121)',
