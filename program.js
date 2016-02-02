@@ -1,5 +1,4 @@
-var CanvasSize      = 450;
-var CanvasElementId = 'myCanvas'
+var CanvasSize = 450;
 
 var Palette = {
     Roots: 'rgb(148,137,121)',
@@ -58,17 +57,16 @@ function* estimatePi() {
     }
 }
 
-var piGenerator = estimatePi();
+var requestAnimationId;
+var canvas                = document.getElementById('myCanvas');
+var cntx                  = canvas.getContext('2d');
+var piGenerator           = estimatePi();
+var totalPointsElement    = document.getElementById('totalPoints'); 
+var pointsInCircleElement = document.getElementById('pointsInCircle'); 
+var piValueElement        = document.getElementById('piValue');
 
 function draw() {
-    requestAnimationFrame(draw);
-
-    var totalPointsElement    = document.getElementById('totalPoints'); 
-    var pointsInCircleElement = document.getElementById('pointsInCircle'); 
-    var piValueElement        = document.getElementById('piValue');
-
-    var canvas = document.getElementById(CanvasElementId);
-    var cntx   = canvas.getContext('2d');
+    requestAnimationId = requestAnimationFrame(draw);
 
     for (var item of take(piGenerator, 100)) {
         var x = item.x * CanvasSize;
@@ -83,16 +81,35 @@ function draw() {
     }
 }
 
-function init() {
-    var canvas = document.getElementById(CanvasElementId);
-    var cntx   = canvas.getContext('2d');
+var playPauseButton = document.getElementById('playPauseBtn');
 
+function onResumeClick() {
+    playPauseBtn.value = '❚❚';
+    playPauseBtn.title = 'Pause';
+
+    playPauseBtn.removeEventListener('click', onResumeClick);
+    playPauseBtn.addEventListener('click', onPauseClick);
+
+    requestAnimationId = requestAnimationFrame(draw);
+}
+
+function onPauseClick() {
+    playPauseBtn.value = '▶';
+    playPauseBtn.title = 'Resume';
+
+    playPauseBtn.removeEventListener('click', onPauseClick);
+    playPauseBtn.addEventListener('click', onResumeClick);
+
+    cancelAnimationFrame(requestAnimationId);
+}
+
+function init() {
     cntx.strokeStyle = Palette.Roots; 
     cntx.beginPath();
     cntx.arc(0, 0, CanvasSize, 0, 2 * Math.PI);
     cntx.stroke();
 
-    requestAnimationFrame(draw);
+    playPauseBtn.addEventListener('click', onResumeClick);
 }
 
 document.addEventListener('DOMContentLoaded', init);
