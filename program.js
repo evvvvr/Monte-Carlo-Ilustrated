@@ -63,6 +63,10 @@ var piGenerator = estimatePi();
 function draw() {
     requestAnimationFrame(draw);
 
+    var totalPointsElement    = document.getElementById('totalPoints'); 
+    var pointsInCircleElement = document.getElementById('pointsInCircle'); 
+    var piValueElement        = document.getElementById('piValue');
+
     var canvas = document.getElementById(CanvasElementId);
     var cntx   = canvas.getContext('2d');
 
@@ -72,6 +76,10 @@ function draw() {
 
         cntx.fillStyle = item.isInCircle ? Palette.Elm : Palette.Roots;
         cntx.fillRect(x, y, 1, 1);
+
+        totalPointsElement.textContent    = item.totalPoints;
+        pointsInCircleElement.textContent = item.pointsInCircle;
+        piValueElement.textContent        = item.estimatedPi; 
     }
 }
 
