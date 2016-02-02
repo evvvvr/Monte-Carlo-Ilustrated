@@ -58,22 +58,15 @@ function* estimatePi() {
     }
 }
 
-const totalPointsElement    = document.getElementById('totalPoints'); 
-const pointsInCircleElement = document.getElementById('pointsInCircle'); 
-const piValueElement        = document.getElementById('piValue');
+let totalPointsIndicator, pointsInCircleIndicator, piValueIndicator; 
 
 function setIndicators(value) {
-    totalPointsElement.textContent    = value.totalPoints;
-    pointsInCircleElement.textContent = value.pointsInCircle;
-    piValueElement.textContent        = value.estimatedPi;
+    totalPointsIndicator.textContent    = value.totalPoints;
+    pointsInCircleIndicator.textContent = value.pointsInCircle;
+    piValueIndicator.textContent        = value.estimatedPi;
 }
 
-const canvas = document.getElementById('myCanvas');
-const cntx   = canvas.getContext('2d');
-
-let piGenerator = estimatePi();
-
-let requestAnimationId;
+let canvas, cntx, piGenerator, requestAnimationId; 
 
 function draw() {
     requestAnimationId = requestAnimationFrame(draw);
@@ -89,8 +82,7 @@ function draw() {
     }
 }
 
-const playPauseButton = document.getElementById('playPauseBtn');
-const resetButton     = document.getElementById('resetBtn');
+let playPauseButton, resetButton;
 
 function onResumeClick() {
     playPauseBtn.value = '❚❚';
@@ -145,6 +137,18 @@ function onResetClick() {
 }
 
 function init() {
+    canvas = document.getElementById('myCanvas');
+    cntx   = canvas.getContext('2d');
+
+    piGenerator = estimatePi();
+
+    totalPointsIndicator    = document.getElementById('totalPoints'); 
+    pointsInCircleIndicator = document.getElementById('pointsInCircle'); 
+    piValueIndicator        = document.getElementById('piValue');
+
+    playPauseButton = document.getElementById('playPauseBtn');
+    resetButton     = document.getElementById('resetBtn');
+
     drawCircle();
 
     playPauseBtn.addEventListener('click', onResumeClick);
